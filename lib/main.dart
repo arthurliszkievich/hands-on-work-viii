@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:caderneta_digital_fiado/domain/repositories/customer_repository.dart';
-import 'package:caderneta_digital_fiado/domain/usecases/register_customer.dart';
-import 'package:caderneta_digital_fiado/domain/usecases/record_purchase.dart';
 import 'package:caderneta_digital_fiado/presentation/controllers/caderneta_controller.dart';
 import 'package:caderneta_digital_fiado/presentation/pages/home_page.dart';
 
