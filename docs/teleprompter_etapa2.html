@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎙️ Studio Prompter — Roteiro Etapa 2 | Caderneta Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0d14;
+      --bg-secondary: #121826;
+      --bg-card: rgba(22, 30, 46, 0.85);
+      --border: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --speech-color: #f1f5f9;
+      --speech-highlight: #34d399;
+      --screen-bg: rgba(16, 185, 129, 0.12);
+      --screen-border: #10b981;
+      --tip-bg: rgba(234, 179, 8, 0.12);
+      --tip-border: #eab308;
+      --code-bg: #030712;
+      --pause-badge: #fbbf24;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --speech-font-size: 26px;
+      --speech-line-height: 1.65;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      padding-bottom: 120px;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    header.studio-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 13, 20, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .header-left { display: flex; align-items: center; gap: 14px; }
+
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .title-group h1 { font-size: 17px; font-weight: 700; color: #fff; }
+    .title-group p { font-size: 12px; color: var(--text-muted); }
+
+    .timer-widget {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 12px;
+    }
+
+    .timer-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--speech-highlight);
+    }
+
+    .timer-display.near-limit { color: var(--warning); }
+    .timer-display.over-limit { color: var(--danger); animation: blink 0.8s infinite; }
+
+    @keyframes blink { 50% { opacity: 0.6; } }
+
+    .timer-max {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .btn-timer {
+      background: #0f766e;
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-timer:hover { background: #0d9488; }
+    .btn-timer.running { background: #dc2626; }
+
+    .btn-reset {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .controls-group { display: flex; align-items: center; gap: 10px; }
+    .control-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+
+    .btn-control {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-control.active {
+      background: #34d399;
+      color: #022c22;
+      border-color: #34d399;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10b981, #38bdf8);
+      transition: width 0.3s ease;
+    }
+
+    .prompter-container { max-width: 980px; margin: 28px auto 0; padding: 0 20px; }
+
+    .cockpit-panel {
+      background: linear-gradient(145deg, rgba(16, 42, 38, 0.7), rgba(15, 23, 42, 0.85));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+
+    .cockpit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .cockpit-title { font-size: 15px; font-weight: 700; color: #34d399; }
+
+    .cockpit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .cockpit-card {
+      background: rgba(10, 15, 29, 0.65);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .cockpit-card-title { font-size: 12px; font-weight: 700; color: #e2e8f0; margin-bottom: 4px; }
+    .cockpit-card-desc { font-size: 11.5px; color: var(--text-muted); line-height: 1.45; }
+
+    .block-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      margin-bottom: 30px;
+      padding: 28px 32px;
+      transition: all 0.25s ease;
+      scroll-margin-top: 110px;
+    }
+
+    .block-card.active-block {
+      border-color: #10b981;
+      box-shadow: 0 0 35px rgba(16, 185, 129, 0.2), 0 10px 40px rgba(0,0,0,0.4);
+      background: linear-gradient(180deg, rgba(17, 36, 40, 0.95), rgba(15, 23, 42, 0.95));
+      transform: scale(1.006);
+    }
+
+    .block-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .block-id-group { display: flex; align-items: center; gap: 10px; }
+
+    .block-badge {
+      background: linear-gradient(135deg, #059669, #0ea5e9);
+      color: #fff;
+      font-weight: 800;
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .block-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: #94a3b8;
+      background: rgba(255,255,255,0.05);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .block-words { font-size: 12px; color: #64748b; }
+    .block-title { font-size: 20px; font-weight: 700; color: #f8fafc; margin-bottom: 16px; }
+
+    .screen-cue-box {
+      background: var(--screen-bg);
+      border-left: 4px solid var(--screen-border);
+      border-radius: 0 12px 12px 0;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      font-size: 13.5px;
+      color: #a7f3d0;
+    }
+
+    .cue-label {
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #34d399;
+      margin-bottom: 6px;
+    }
+
+    .screen-cue-box ol, .screen-cue-box ul { margin-left: 20px; margin-top: 6px; }
+    .screen-cue-box li { margin-bottom: 4px; }
+
+    .speech-box {
+      background: rgba(3, 7, 18, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 24px 28px;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .speech-box::before {
+      content: "🗣️ FALA NO TELEPROMPTER";
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      background: #1e293b;
+      color: #34d399;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      padding: 2px 10px;
+      border-radius: 9999px;
+      border: 1px solid rgba(52, 211, 153, 0.35);
+    }
+
+    .speech-text {
+      font-size: var(--speech-font-size);
+      line-height: var(--speech-line-height);
+      color: var(--speech-color);
+      font-weight: 500;
+    }
+
+    .speech-text strong {
+      color: #ffffff;
+      font-weight: 800;
+      border-bottom: 2px solid rgba(52, 211, 153, 0.65);
+    }
+
+    .pause-pill {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      color: var(--pause-badge);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin: 0 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .tip-box {
+      background: var(--tip-bg);
+      border-left: 4px solid var(--tip-border);
+      border-radius: 0 10px 10px 0;
+      padding: 10px 16px;
+      font-size: 12.5px;
+      color: #fef08a;
+    }
+
+    .command-box {
+      margin-top: 12px;
+      background: var(--code-bg);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    .command-code { color: #6ee7b7; overflow-x: auto; white-space: nowrap; }
+
+    .btn-copy {
+      background: rgba(255,255,255,0.08);
+      color: #cbd5e1;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-copy.copied { background: #059669; color: #fff; border-color: #059669; }
+
+    .floating-hub {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 110;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+      padding: 10px 20px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-nav {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-nav:hover { background: #34d399; color: #022c22; }
+    .block-nav-indicator { font-size: 13px; font-weight: 700; color: #94a3b8; padding: 0 8px; }
+    .shortcut-hint { font-size: 11px; color: #64748b; margin-left: 8px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 12px; }
+
+    kbd {
+      background: rgba(255,255,255,0.12);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #e2e8f0;
+    }
+
+    .toast {
+      position: fixed;
+      top: 90px;
+      right: 24px;
+      z-index: 200;
+      background: #059669;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+    body.high-contrast { --bg-primary: #000; --bg-card: #050505; --speech-color: #fff; }
+  </style>
+</head>
+<body>
+
+  <header class="studio-header">
+    <div class="header-left">
+      <div class="badge-live"><span class="pulse-dot"></span> ETAPA 2</div>
+      <div class="title-group">
+        <h1>📱 Studio Prompter — Aplicação Mobile & Testes (Etapa 2)</h1>
+        <p>Caderneta Digital de Fiado | Meta: ~2m 45s (Teto: 3m 00s)</p>
+      </div>
+    </div>
+
+    <div class="timer-widget">
+      <span class="timer-display" id="timerDisplay">00:00</span>
+      <span class="timer-max">/ 02:45</span>
+      <button class="btn-timer" id="btnToggleTimer">▶ Iniciar</button>
+      <button class="btn-reset" id="btnResetTimer" title="Reiniciar">↺</button>
+    </div>
+
+    <div class="controls-group">
+      <div class="control-item">
+        <span>Fonte:</span>
+        <button class="btn-control" id="btnFontDec">A-</button>
+        <button class="btn-control" id="btnFontInc">A+</button>
+      </div>
+      <button class="btn-control" id="btnAutoScroll">📜 Auto-Scroll: OFF</button>
+      <button class="btn-control" id="btnContrast">🌓 Contraste</button>
+    </div>
+
+    <div class="progress-track"><div class="progress-fill" id="timerProgress"></div></div>
+  </header>
+
+  <main class="prompter-container">
+
+    <section class="cockpit-panel">
+      <div class="cockpit-header" onclick="toggleCockpit()">
+        <span class="cockpit-title">🎛️ Preparação antes do REC — Deixe estas janelas prontas</span>
+        <span id="cockpitToggleIcon" style="color: #34d399; font-size: 13px;">[ Recolher ▲ ]</span>
+      </div>
+      <div class="cockpit-grid" id="cockpitGrid">
+        <div class="cockpit-card">
+          <div class="cockpit-card-title">📱 App Flutter (Chrome)</div>
+          <div class="cockpit-card-desc">Sirva com <code>flutter run -d web-server --web-port=8080</code> e dê <strong>F5</strong> para resetar os 3 clientes (<code>R$ 335,50</code>).</div>
+        </div>
+        <div class="cockpit-card">
+          <div class="cockpit-card-title">📟 Terminal da IDE</div>
+          <div class="cockpit-card-desc">Pronto para executar <code>flutter analyze && flutter test</code> mostrando os 22 testes verdes.</div>
+        </div>
+        <div class="cockpit-card">
+          <div class="cockpit-card-title">🌐 GitHub Actions</div>
+          <div class="cockpit-card-desc">Aba do repositório aberta no CI verde com os commits da Etapa 2.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCO 1 -->
+    <article class="block-card active-block" id="block-1" data-start="0" data-end="20">
+      <div class="block-meta-bar">
+        <div class="block-id-group">
+          <span class="block-badge">Bloco 1 de 6</span>
+          <span class="block-time">⏱️ 0:00 — 0:20 (20s)</span>
+        </div>
+        <span class="block-words">Abertura • App aberto na tela</span>
+      </div>
+      <h2 class="block-title">📌 Abertura & Evolução da Etapa 1 para a Etapa 2</h2>
+      <div class="screen-cue-box">
+        <div class="cue-label">🖥️ O QUE MOSTRAR NA TELA:</div>
+        App Flutter aberto no navegador dentro da moldura mobile, exibindo o painel inicial com <strong>Total a Receber na Rua: R$ 335,50</strong> e os 3 clientes iniciais.
+      </div>
+      <div class="speech-box">
+        <p class="speech-text">
+          "Olá! Sou o <strong>Arthur</strong> e apresento a entrega da <strong>Etapa 2</strong> da <strong>Caderneta Digital de Fiado</strong>, no Hands on Work VIII da UNIVALI, com <strong>Matheus, Alifer, Fátima, Evy e Aghata</strong>."
+          <span class="pause-pill">⏸️ 1s</span>
+          "Na Etapa 1, blindamos as regras contábeis em Dart puro. Agora, materializamos a <strong>Aplicação Mobile</strong> completa em Flutter e os testes integrados da interface."
+        </p>
+      </div>
+      <div class="tip-box">💡 <strong>Dica:</strong> Comece direto mostrando o celular na tela — o contraste com o terminal da Etapa 1 fica excelente!</div>
+    </article>
+
+    <!-- BLOCO 2 -->
+    <article class="block-card" id="block-2" data-start="20" data-end="45">
+      <div class="block-meta-bar">
+        <div class="block-id-group">
+          <span class="block-badge">Bloco 2 de 6</span>
+          <span class="block-time">⏱️ 0:20 — 0:45 (25s)</span>
+        </div>
+        <span class="block-words">Cliques: Filtro + Novo Cliente</span>
+      </div>
+      <h2 class="block-title">📌 Painel do Comerciante & Regra 1 (Cadastro com Saldo Zero)</h2>
+      <div class="screen-cue-box">
+        <div class="cue-label">🖥️ ONDE CLICAR AO VIVO:</div>
+        <ol>
+          <li>Toque no filtro <strong>"Com dívida (2)"</strong> e volte em <strong>"Todos (3)"</strong>.</li>
+          <li>Toque em <strong>"+ Novo Cliente"</strong> (canto inferior direito).</li>
+          <li>Digite <strong>"Ana Paula"</strong>, clique no chip <strong>"Limite R$ 150,00"</strong> e em <strong>"Cadastrar Cliente"</strong>.</li>
+        </ol>
+      </div>
+      <div class="speech-box">
+        <p class="speech-text">
+          "Na tela inicial, o comerciante acompanha o total a receber na rua em tempo real e filtra rapidamente quem tem pendências."
+          <span class="pause-pill">⏸️ 1s</span>
+          "Ao cadastrar um novo cliente pelo modal, o app aciona a <strong>Regra 1</strong> do domínio, garantindo que toda conta comece com <strong>saldo devedor zero</strong> e limite definido."
+        </p>
+      </div>
+      <div class="tip-box">💡 <strong>Dica:</strong> Use o chip pronto <code>Limite R$ 150,00</code> para não perder tempo digitando valores!</div>
+    </article>
+
+    <!-- BLOCO 3 -->
+    <article class="block-card" id="block-3" data-start="45" data-end="85">
+      <div class="block-meta-bar">
+        <div class="block-id-group">
+          <span class="block-badge">Bloco 3 de 6</span>
+          <span class="block-time">⏱️ 0:45 — 1:25 (40s)</span>
+        </div>
+        <span class="block-words">Clímax • Trava de Limite na UI</span>
+      </div>
+      <h2 class="block-title">📌 Regra 2 — Compra Fiada & Trava Automática de Crédito</h2>
+      <div class="screen-cue-box">
+        <div class="cue-label">🖥️ ONDE CLICAR AO VIVO (DONA MARIA):</div>
+        <ol>
+          <li>No card da <strong>Dona Maria da Silva</strong> (disponível: <code>R$ 64,50</code>), clique em <strong>"Fiado"</strong>.</li>
+          <li>Clique no chip <strong>"Mercearia (R$ 85,50)"</strong> ➔ <strong>"Confirmar Compra no Fiado"</strong>.</li>
+          <li>Mostre o banner vermelho: <strong>"Trava Automática de Crédito Acionada"</strong>!</li>
+          <li>Clique no chip <strong>"Pão e Leite (R$ 25,00)"</strong> ➔ <strong>"Confirmar Compra no Fiado"</strong> (o selo vira <strong>"Limite próximo"</strong>).</li>
+        </ol>
+      </div>
+      <div class="speech-box">
+        <p class="speech-text">
+          "Agora validamos a <strong>Regra 2</strong> na prática. A Dona Maria tem apenas sessenta e quatro reais e cinquenta de crédito livre."
+          <span class="pause-pill">⏸️ 1s</span>
+          "Ao tentar anotar oitenta e cinco reais, a interface exibe na hora a <strong>Trava Automática de Crédito</strong>, impedindo o endividamento acima do teto. Já uma compra de vinte e cinco reais dentro do limite é aprovada e atualiza o alerta visual para <strong>limite próximo</strong>."
+        </p>
+      </div>
+      <div class="tip-box">💡 <strong>Dica:</strong> Deixe o banner vermelho na tela por uns 2 segundos antes de clicar no chip de R$ 25,00!</div>
+    </article>
+
+    <!-- BLOCO 4 -->
+    <article class="block-card" id="block-4" data-start="85" data-end="115">
+      <div class="block-meta-bar">
+        <div class="block-id-group">
+          <span class="block-badge">Bloco 4 de 6</span>
+          <span class="block-time">⏱️ 1:25 — 1:55 (30s)</span>
+        </div>
+        <span class="block-words">Cliques: Pagamento + Extrato</span>
+      </div>
+      <h2 class="block-title">📌 Regra 3 — Baixa de Pagamento & Extrato Individual</h2>
+      <div class="screen-cue-box">
+        <div class="cue-label">🖥️ ONDE CLICAR AO VIVO (SEU RAIMUNDO):</div>
+        <ol>
+          <li>No card do <strong>Seu Raimundo Nonato</strong> (<code>R$ 100,00</code>), clique em <strong>"Receber"</strong>.</li>
+          <li>Clique no chip <strong>"Quitar Total (R$ 100,00)"</strong> ➔ <strong>"Registrar Baixa de Pagamento"</strong> (vira <strong>"Em dia"</strong>).</li>
+          <li>Clique no <strong>ícone de recibo</strong> ao lado de "Receber" para abrir a <strong>Ficha de Fiado</strong> e mostrar o extrato cronológico.</li>
+        </ol>
+      </div>
+      <div class="speech-box">
+        <p class="speech-text">
+          "Na <strong>Regra 3</strong>, acessamos o pagamento do Seu Raimundo. O sistema também bloqueia valores acima da dívida para nunca gerar saldo negativo. Ao quitar os cem reais, o status muda automaticamente para <strong>Em dia</strong>, e todo o histórico de compras e amortizações fica auditável na <strong>Ficha de Fiado</strong>."
+        </p>
+      </div>
+      <div class="tip-box">💡 <strong>Dica:</strong> Na Ficha de Fiado, passe o mouse pelo extrato mostrando os sinais de <code>+</code> (compra) e <code>-</code> (amortização).</div>
+    </article>
+
+    <!-- BLOCO 5 -->
+    <article class="block-card" id="block-5" data-start="115" data-end="150">
+      <div class="block-meta-bar">
+        <div class="block-id-group">
+          <span class="block-badge">Bloco 5 de 6</span>
+          <span class="block-time">⏱️ 1:55 — 2:30 (35s)</span>
+        </div>
+        <span class="block-words">Terminal + GitHub Actions</span>
+      </div>
+      <h2 class="block-title">📌 Testes de Widget/Controller (TDD) & CI no GitHub</h2>
+      <div class="screen-cue-box">
+        <div class="cue-label">🖥️ O QUE MOSTRAR NA TELA:</div>
+        1. Dê <code>Alt + Tab</code> para o Terminal e rode:
+        <div class="command-box">
+          <span class="command-code">flutter analyze && flutter test</span>
+          <button class="btn-copy" onclick="copyCommand('flutter analyze && flutter test', this)">📋 Copiar</button>
+        </div>
+        2. Mostre <code>No issues found!</code> e <code>+22: All tests passed!</code>.<br>
+        3. Dê <code>Alt + Tab</code> rápido para a aba do <strong>GitHub Actions</strong> com o check verde ✅.
+      </div>
+      <div class="speech-box">
+        <p class="speech-text">
+          "Seguindo o rigor do <strong>TDD</strong>, evoluímos nossa suíte de treze para <strong>vinte e dois testes automatizados</strong>, cobrindo o repositório em memória, o <code>CadernetaController</code> e testes de widget simulando toques reais nas telas."
+          <span class="pause-pill">⏸️ 1s</span>
+          "O <code>flutter analyze</code> fecha sem nenhum alerta, alcançamos <strong>88,8% de cobertura global</strong> com mais de noventa e cinco por cento nas telas, e toda a esteira segue validada no <strong>GitHub Actions</strong>."
+        </p>
+      </div>
+      <div class="tip-box">💡 <strong>Dica:</strong> Aperte a tecla <strong>C</strong> aqui no teleprompter para copiar o comando direto se precisar!</div>
+    </article>
+
+    <!-- BLOCO 6 -->
+    <article class="block-card" id="block-6" data-start="150" data-end="165">
+      <div class="block-meta-bar">
+        <div class="block-id-group">
+          <span class="block-badge">Bloco 6 de 6</span>
+          <span class="block-time">⏱️ 2:30 — 2:45 (15s)</span>
+        </div>
+        <span class="block-words">Fechamento</span>
+      </div>
+      <h2 class="block-title">📌 Validação Final & Encerramento</h2>
+      <div class="screen-cue-box">
+        <div class="cue-label">🖥️ O QUE MOSTRAR NA TELA:</div>
+        Volte para o app aberto no Chrome (ou para a página principal do repositório no GitHub).
+      </div>
+      <div class="speech-box">
+        <p class="speech-text">
+          "Com isso, entregamos a <strong>Etapa 2</strong> unindo Clean Architecture, TDD e uma aplicação mobile pronta para validação prática com pequenos comerciantes. Todo o código e evidências estão no repositório oficial. Muito obrigado!"
+        </p>
+      </div>
+      <div class="tip-box">💡 <strong>Dica:</strong> Encerre sorrindo e aguarde 2 segundos em silêncio antes de parar o gravador de tela.</div>
+    </article>
+
+  </main>
+
+  <aside class="floating-hub">
+    <button class="btn-nav" onclick="prevBlock()">◀ Anterior</button>
+    <span class="block-nav-indicator" id="navIndicator">Bloco 1 / 6</span>
+    <button class="btn-nav" onclick="nextBlock()">Próximo ▶</button>
+    <div class="shortcut-hint">
+      <kbd>Espaço</kbd> Play/Pause &nbsp;|&nbsp; <kbd>←</kbd> <kbd>→</kbd> Blocos &nbsp;|&nbsp; <kbd>C</kbd> Copiar Comando
+    </div>
+  </aside>
+
+  <div class="toast" id="toast"><span>✅ Comando copiado!</span></div>
+
+  <script>
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    const CEILING_SECONDS = 180;
+    let isAutoScrolling = false;
+    let autoScrollInterval = null;
+    let currentBlockIndex = 1;
+    const totalBlocks = 6;
+    let currentFontSize = 26;
+
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerProgress = document.getElementById('timerProgress');
+    const btnToggleTimer = document.getElementById('btnToggleTimer');
+    const btnResetTimer = document.getElementById('btnResetTimer');
+    const navIndicator = document.getElementById('navIndicator');
+    const toast = document.getElementById('toast');
+
+    function formatTime(totalSeconds) {
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateTimerUI() {
+      timerDisplay.textContent = formatTime(secondsElapsed);
+      timerProgress.style.width = Math.min((secondsElapsed / CEILING_SECONDS) * 100, 100) + '%';
+      if (secondsElapsed >= CEILING_SECONDS) {
+        timerDisplay.className = 'timer-display over-limit';
+        timerProgress.style.background = '#ef4444';
+      } else if (secondsElapsed >= 160) {
+        timerDisplay.className = 'timer-display near-limit';
+        timerProgress.style.background = '#f59e0b';
+      } else {
+        timerDisplay.className = 'timer-display';
+        timerProgress.style.background = 'linear-gradient(90deg, #10b981, #38bdf8)';
+      }
+      syncBlockWithTime(secondsElapsed);
+    }
+
+    function toggleTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        btnToggleTimer.innerHTML = '▶ Continuar';
+        btnToggleTimer.classList.remove('running');
+      } else {
+        btnToggleTimer.innerHTML = '⏸ Pausar';
+        btnToggleTimer.classList.add('running');
+        timerInterval = setInterval(() => { secondsElapsed++; updateTimerUI(); }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      secondsElapsed = 0;
+      btnToggleTimer.innerHTML = '▶ Iniciar';
+      btnToggleTimer.classList.remove('running');
+      updateTimerUI();
+      highlightBlock(1, true);
+    }
+
+    btnToggleTimer.addEventListener('click', toggleTimer);
+    btnResetTimer.addEventListener('click', resetTimer);
+
+    function syncBlockWithTime(secs) {
+      for (let i = 1; i <= totalBlocks; i++) {
+        const el = document.getElementById(`block-${i}`);
+        if (!el) continue;
+        const start = parseInt(el.getAttribute('data-start'), 10);
+        const end = parseInt(el.getAttribute('data-end'), 10);
+        if (secs >= start && secs < end && currentBlockIndex !== i) {
+          highlightBlock(i, false);
+          break;
+        }
+      }
+    }
+
+    function highlightBlock(index, shouldScroll = true) {
+      currentBlockIndex = index;
+      for (let i = 1; i <= totalBlocks; i++) {
+        const block = document.getElementById(`block-${i}`);
+        if (block) {
+          block.classList.toggle('active-block', i === index);
+          if (i === index && shouldScroll) {
+            block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      }
+      navIndicator.textContent = `Bloco ${index} / ${totalBlocks}`;
+    }
+
+    function nextBlock() { if (currentBlockIndex < totalBlocks) highlightBlock(currentBlockIndex + 1, true); }
+    function prevBlock() { if (currentBlockIndex > 1) highlightBlock(currentBlockIndex - 1, true); }
+
+    document.getElementById('btnFontInc').addEventListener('click', () => {
+      if (currentFontSize < 44) {
+        currentFontSize += 2;
+        document.documentElement.style.setProperty('--speech-font-size', currentFontSize + 'px');
+      }
+    });
+
+    document.getElementById('btnFontDec').addEventListener('click', () => {
+      if (currentFontSize > 18) {
+        currentFontSize -= 2;
+        document.documentElement.style.setProperty('--speech-font-size', currentFontSize + 'px');
+      }
+    });
+
+    document.getElementById('btnAutoScroll').addEventListener('click', function() {
+      isAutoScrolling = !isAutoScrolling;
+      this.classList.toggle('active', isAutoScrolling);
+      this.innerHTML = isAutoScrolling ? '📜 Auto-Scroll: ON' : '📜 Auto-Scroll: OFF';
+      if (isAutoScrolling) {
+        autoScrollInterval = setInterval(() => window.scrollBy({ top: 1, behavior: 'auto' }), 32);
+      } else {
+        clearInterval(autoScrollInterval);
+      }
+    });
+
+    document.getElementById('btnContrast').addEventListener('click', function() {
+      document.body.classList.toggle('high-contrast');
+      this.classList.toggle('active');
+    });
+
+    function toggleCockpit() {
+      const grid = document.getElementById('cockpitGrid');
+      const icon = document.getElementById('cockpitToggleIcon');
+      const hidden = grid.style.display === 'none';
+      grid.style.display = hidden ? 'grid' : 'none';
+      icon.textContent = hidden ? '[ Recolher ▲ ]' : '[ Expandir ▼ ]';
+    }
+
+    function copyCommand(text, btnElement) {
+      navigator.clipboard.writeText(text).then(() => {
+        toast.querySelector('span').textContent = `✅ Copiado: "${text}"`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+        if (btnElement) {
+          const original = btnElement.innerHTML;
+          btnElement.innerHTML = '✓ Copiado!';
+          btnElement.classList.add('copied');
+          setTimeout(() => { btnElement.innerHTML = original; btnElement.classList.remove('copied'); }, 2000);
+        }
+      });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+        e.preventDefault();
+        toggleTimer();
+      } else if (e.code === 'ArrowRight') {
+        e.preventDefault();
+        nextBlock();
+      } else if (e.code === 'ArrowLeft') {
+        e.preventDefault();
+        prevBlock();
+      } else if (e.key === 'c' || e.key === 'C') {
+        const cmdBox = document.querySelector('.active-block .command-code');
+        if (cmdBox) copyCommand(cmdBox.textContent.trim());
+      }
+    });
+  </script>
+</body>
+</html>
